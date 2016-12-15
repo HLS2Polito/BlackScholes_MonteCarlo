@@ -45,7 +45,7 @@ void blackScholes::sampleSIM(RNG* mt_rng, data_t* pCall, data_t *pPut)
 	const data_t ratio2=(data.freeRate-0.5f*data.volatility*data.volatility)*data.timeT;
 	const data_t ratio3=data.volatility*data.volatility*data.timeT;
 	const data_t ratio4=ratio2-logf(data.strikePrice/data.initPrice);
-	data_t sumCall=0,sumPut=0;
+	data_t sumCall=0.0f,sumPut=0.0f;
 	data_t pCall1[NUM_RNGS][NUM_SIMS],pCall2[NUM_RNGS][NUM_SIMS];
 #pragma HLS ARRAY_PARTITION variable=pCall1 complete dim=1
 #pragma HLS ARRAY_PARTITION variable=pCall2 complete dim=1
@@ -62,10 +62,10 @@ void blackScholes::sampleSIM(RNG* mt_rng, data_t* pCall, data_t *pPut)
 #pragma HLS PIPELINE
 		loop_r:for(int i =0;i<NUM_RNGS;i++) {
 #pragma HLS UNROLL
-			pCall1[i][k]=0;
-			pCall2[i][k]=0;
-			pPut1[i][k]=0;
-			pPut2[i][k]=0;
+			pCall1[i][k]=0.0f;
+			pCall2[i][k]=0.0f;
+			pPut1[i][k]=0.0f;
+			pPut2[i][k]=0.0f;
 		}
 	}
 	loop_main:for(int j=0;j<NUM_SIMGROUPS;j+=2) {
@@ -74,14 +74,16 @@ void blackScholes::sampleSIM(RNG* mt_rng, data_t* pCall, data_t *pPut)
 			loop_parallel:for(int i=0;i<NUM_RNGS;i++) {
 #pragma HLS UNROLL
 				mt_rng[i].BOX_MULLER(&num1[i][k],&num2[i][k],ratio4,ratio3);
-				if(num1[i][k]>0)
-					pCall1[i][k]+=expf(num1[i][k])-1;
+				float payoff1 = expf(num1[i][k])-1.0f;
+				float payoff2 = expf(num2[i][k])-1.0f;
+				if(num1[i][k]>0.0f)
+					pCall1[i][k]+= payoff1;
 				else
-					pPut1[i][k]+=1-expf(num1[i][k]);
-				if(num2[i][k]>0)
-					pCall2[i][k]+=expf(num2[i][k])-1;
+					pPut1[i][k]-=payoff1;
+				if(num2[i][k]>0.0f)
+					pCall2[i][k]+=payoff2;
 				else
-					pPut2[i][k]+=1-expf(num2[i][k]);
+					pPut2[i][k]-=payoff2;
 			}
 		}
 	}

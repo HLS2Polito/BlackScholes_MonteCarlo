@@ -46,10 +46,10 @@ void blackScholes::sampleSIM(RNG* mt_rng, data_t *pCall, data_t *pPut)
 {
 	const data_t Dt=data.timeT/data_t(NUM_STEPS);
 	const data_t ratio1=expf(-data.freeRate*data.timeT);
-	const data_t ratio2=(data.freeRate-data.volatility*data.volatility*0.5)*Dt;
+	const data_t ratio2=(data.freeRate-data.volatility*data.volatility*0.5f)*Dt;
 	const data_t ratio3=Dt*data.volatility*data.volatility;
 	const data_t initValue=logf(data.initPrice/NUM_STEPS/1.0f);
-	data_t call=0,put=0;
+	data_t call=0.0f,put=0.0f;
 
 	data_t sum_call[NUM_RNGS], sum_put[NUM_RNGS];
 #pragma HLS ARRAY_PARTITION variable=sum_call complete dim=1
@@ -75,10 +75,10 @@ void blackScholes::sampleSIM(RNG* mt_rng, data_t *pCall, data_t *pPut)
 		loop_set1:for(int i=0;i<NUM_RNGS;i++) {
 	#pragma HLS UNROLL
 			if(k==0) {
-				sum_call[i]=0;
-				sum_put[i]=0;
-				sum_call1[i]=0;
-				sum_put1[i]=0;
+				sum_call[i]=0.0f;
+				sum_put[i]=0.0f;
+				sum_call1[i]=0.0f;
+				sum_put1[i]=0.0f;
 			}
 			acc1[i][k]=initValue;
 			ave1[i][k]=-data.strikePrice;
@@ -105,11 +105,11 @@ void blackScholes::sampleSIM(RNG* mt_rng, data_t *pCall, data_t *pPut)
 			loop_sum:for(int i=0;i<NUM_RNGS;i++) {
 #pragma HLS UNROLL
 			//	std::cout<<"i="<<i<<" k="<<k<<" ave="<<ave[i][k]<<" ave1="<<ave1[i][k]<<std::endl;
-				if(ave[i][k]>0)
+				if(ave[i][k]>0.0f)
 					sum_call[i]+=ave[i][k];
 				else
 					sum_put[i]+=ave[i][k];
-				if(ave1[i][k]>0)
+				if(ave1[i][k]>0.0f)
 					sum_call1[i]+=ave1[i][k];
 				else
 					sum_put1[i]+=ave1[i][k];

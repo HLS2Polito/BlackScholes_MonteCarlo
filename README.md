@@ -250,18 +250,19 @@ At frequencies below 100MHz on modern FPGAs, two random numbers are produced eve
 
 ### Performance Comparison
 - Intel HD Graphics 4400 laptop GPU, with 80 cores, 1100MHz
-- GeForce GTX 960 with 1024 cores, 1178MHz
-- Quadro K4200 with 1344 cores, 784MHz
+- GeForce GTX 960 with 1024 cores, 1178MHz, default power 120W, idle power 8W
+- Quadro K4200 with 1344 cores, 784MHz, default power 108W, idle power 13W
 - GeForce GTX Titan Z with 5760 cores, 876MHz(**extrapolated**)
 - Virtex 7 xc7vx690tffg1157-2, using the sin/cos functions
 
 platform         |     t(ns)    | power(W)| energy/step(nJ)| notes
 :--------------- | ------------:| -------:| --------: |-------------
 HD 4400          |      3.13    |  15     |     46.9  |
-GTX 960          |      0.163   |  120    |     19.56 |
-Quadro K4200     |      0.204   |  105    |     21.42 |
+GTX 960          |      0.163   |  98-8   |     14.67 |
+Quadro K4200     |      0.204   |  105-13 |     20.81 |
 GTX Titan        |      0.0389  |  375    |     14.61 | extrapolated
 Virtex 7 sin/cos |      0.315   |  24.4   |     7.69  |
+Virtex 7 sinf/cosf |      0.0958  |  21.2   |     1.94  |
 
 [Black-Scholes Model]: https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model
 [geometric Brownian motion]: https://en.wikipedia.org/wiki/Geometric_Brownian_motion
